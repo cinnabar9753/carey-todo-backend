@@ -3,12 +3,14 @@ package com.example.todolist.controller;
 import com.example.todolist.entity.Todo;
 import com.example.todolist.repository.JpaTodoRepo;
 import com.example.todolist.service.TodoService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -52,4 +54,33 @@ class TodoControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].done").value(false))
                 .andDo(MockMvcResultHandlers.print());
     }
+
+    @Test
+    public void should_add_a_todo_when_perform_post_given_a_todo() throws Exception {
+        //given
+        Todo request = new Todo("aaa",false);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestJson = objectMapper.writeValueAsString(request);
+        //when & then
+        client.perform(MockMvcRequestBuilders.post("/todos")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.context").value("aaa"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.done").value(false))
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    public void should_delete_a_todo_when_perform_delete_given_a_id() throws Exception {
+        //given
+        Todo todo = todoRepo.save(new Todo("aaa", false));
+        todoRepo.save(new Todo("bbb",false));
+
+        //when & then
+        client.perform(MockMvcRequestBuilders.delete("/todos/{id}",todo.getId()))
+                .andExpect(MockMvcResultMatchers.status().isNoContent())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
 }
