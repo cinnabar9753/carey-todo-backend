@@ -83,4 +83,22 @@ class TodoControllerTest {
                 .andDo(MockMvcResultHandlers.print());
     }
 
+    @Test
+    public void should_update_a_todo_when_perform_put_given_a_todo() throws Exception {
+        //given
+        Todo todo = todoRepo.save(new Todo("aaa", false));
+        Todo request = new Todo();
+        request.setDone(true);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestJson = objectMapper.writeValueAsString(request);
+        //when & then
+        client.perform(MockMvcRequestBuilders.put("/todos/{id}",todo.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+//                .andExpect(MockMvcResultMatchers.jsonPath("$.context").value("bbb"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.done").value(true))
+                .andDo(MockMvcResultHandlers.print());
+    }
+
 }

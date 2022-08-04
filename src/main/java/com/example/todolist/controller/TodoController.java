@@ -1,6 +1,7 @@
 package com.example.todolist.controller;
 
 
+import com.example.todolist.controller.dto.TodoRequest;
 import com.example.todolist.entity.Todo;
 import com.example.todolist.service.TodoService;
 import org.springframework.http.HttpStatus;
@@ -28,7 +29,7 @@ public class TodoController {
     }
 
     @PutMapping("/{id}")
-    public Todo updateTodo(@PathVariable int id, @RequestBody Todo todo){
+    public Todo updateTodo(@PathVariable int id, @RequestBody TodoRequest todo){
         return todoService.update(id,todo);
     }
 

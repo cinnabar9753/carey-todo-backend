@@ -1,5 +1,6 @@
 package com.example.todolist.service;
 
+import com.example.todolist.controller.dto.TodoRequest;
 import com.example.todolist.entity.Todo;
 import com.example.todolist.exception.TodoNotFound;
 import com.example.todolist.repository.JpaTodoRepo;
@@ -22,11 +23,12 @@ public class TodoService {
         return todoRepo.save(todo);
     }
 
-    public Todo update(int id, Todo todo){
+    public Todo update(int id, TodoRequest todo){
         Todo toUpdate = todoRepo.findById(id).orElseThrow(TodoNotFound::new);
-        if (!toUpdate.getContext().isEmpty())
+        if (todo.getContext()!=null)
             toUpdate.setContext(todo.getContext());
-        toUpdate.setDone(todo.isDone());
+        if (todo.getDone()!=null)
+            toUpdate.setDone(todo.getDone());
         return todoRepo.save(toUpdate);
     }
 
